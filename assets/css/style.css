@@ -184,9 +184,9 @@ a{
 .post-list li{
     list-style: none;
     display: block;
-    height: auto;
+    height: 200px;
     width: 320px;
-    margin: 30px auto;
+    margin: 320px auto;
     background-color: white;
     border-radius: 3px;
     border: 1px solid #e7eaf1;
