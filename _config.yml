@@ -17,10 +17,10 @@ author: true
 name: '赵韦'
 NickName: 'leafgood'
 webtitle: 'http://leafgood.github.io'
-school: '北京大学 信息管理与信息系统'
-skill: '编程语言:Java\Python 领域:云计算与大数据'
-email: 'zhaow610@qq.com'
-# position: '北京龙腾佳讯科技股份公司 云运维经理'
+school: '毕业学校：北京大学-信息管理与信息系统'
+skill: '编程语言：Java\Python'
+email: '邮箱：zhaow610@qq.com'
+# position: ''
 # bio: `` # 我的链接
 about: false
 aboutyou: ''
