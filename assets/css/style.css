@@ -3,11 +3,11 @@ html,body,ul,li,div,header,nav,main,footer{
     padding: 0;
 }
 html{
-    background-image: url(/assets/bak.png);
-    background-repeat: no-repeat;
-    background-size: 100%;
+    /*background-image: url(/assets/bak.png);*/
+    /*background-repeat: no-repeat;*/
+    /*background-size: 100%;*/
     background-position: center;
-    /*background-color: silver;*/
+    background-color: white;
     font-family: Ubuntu;
 }
 /*html::-webkit-scrollbar{
@@ -19,7 +19,7 @@ a{
 #index-header{
     width: 100%;
     height: 75px;
-    background-color: silver;
+    background-color: white;
     border-bottom: 1px solid #e7eaf1;
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
