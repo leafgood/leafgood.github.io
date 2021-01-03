@@ -184,7 +184,7 @@ a{
 .post-list li{
     list-style: none;
     display: block;
-    height: 200px;
+    height: 200px auto;
     width: 320px;
     margin: 20px auto;
     background-color: white;
