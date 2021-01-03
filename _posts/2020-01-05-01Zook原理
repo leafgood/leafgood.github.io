@@ -1,0 +1,42 @@
+# 1.监听机制
+## 1.1 触发器watch
+- 什么是触发器watch？
+watch事件是一次性的触发器。Zookeeper能够在所有的读操作上设置触发器watch，当watch的对象状态发生变化，就会触发此对象上触发器对应的事件。
+watch事件传递到客户端，这个过程是异步执行的。
+
+- watch类型
+Zookeeper中触发器的watch有两类，data watch和child watch。
+1）data watch：getData和exists负责设置datawatch。
+2）child watch：getChildren负责设置child watch
+
+- watch注册和触发详解
+![watch触发器注册与触发](../assets/article/watch.png) 
+
+通过操作getData、exists和getChildren的返回值来设置不同的watch。
+*getData和exists返回节点的数据信息，getChildren返回子节点列表*
+
+1）在exists上watch，被监视的Znode创建、删除、数据更新会触发
+2）getData上的watch，被监视的Znode删除或数据更新时会触发。注意被创建时不会触发，而创建时，Znode还不存在，Znode只有存在，getData的操作才会成功，也才能触发watch。
+3）getChildren上的watch，被监视的Znode创建或者删除它的子节点child，或者Znode被删除时会触发。具体是触发的watch是什么类型的事件，可以对应上表。
+
+## 1.2监听原理
+整个监听机制的运行脱离不了三个角色，Client、Client WatcherManage、Zookeeper Server。
+1）Client在向服务器Zookeeper Server注册时，WatcherManager会存储Wather对象。
+2）当Zookeeper Server触发Watcher事件后，向Client发送通知。
+3）Client从WatcherManager取出对应的Watcher对象来执行回调。
+
+# 2.半数机制
+Zookeeper集群中只要半数以上机器存活，集群就能正常运行，所以部署时，我们一般安装奇数个节点,5\7\9\11等。
+
+# 3.选举机制
+首先明确一点，Zookeeper集群没有master和slave的概念，但有leader和follower节点之分。
+leader节点只有一个。
+以五个节点的示例说明(这个示例记得是从一个博客看来的，具体是哪个忘了，当时只保存这个内容)
+
+假设有五台服务器组成的 zookeeper 集群，它们 的 serverid 从 1-5，同时它们都是最新启动的，也就是没有历史数据，在存放数据量这一点 上，都是一样的。假设这些服务器依序启动，来看看会发生什么
+1、服务器 1 启动，此时只有它一台服务器启动了，它发出去的报没有任何响应，所以它的 选举状态一直是 LOOKING 状态
+2、服务器 2 启动，它与最开始启动的服务器 1 进行通信，互相交换自己的选举结果，由于 两者都没有历史数据，所以 id 值较大的服务器 2 胜出，但是由于没有达到超过半数以上的服务器都同意选举它(这个例子中的半数以上是 3)，所以服务器 1、2 还是继续保持 LOOKING 状态
+3、服务器 3 启动，根据前面的理论分析，服务器 3 成为服务器 1,2,3 中的老大，而与上面不 同的是，此时有三台服务器(超过半数)选举了它，所以它成为了这次选举的 leader
+4、服务器 4 启动，根据前面的分析，理论上服务器 4 应该是服务器 1,2,3,4 中最大的，但是 由于前面已经有半数以上的服务器选举了服务器 3，所以它只能接收当小弟的命了
+5、服务器 5 启动，同 4 一样，当小弟
+
