@@ -3,7 +3,7 @@ html,body,ul,li,div,header,nav,main,footer{
     padding: 0;
 }
 html{
-    background-image: url(/assets/bak.svg);
+    background-image: url(/assets/bak.png);
     background-repeat: no-repeat;
     background-size: 100%;
     background-position: center;
