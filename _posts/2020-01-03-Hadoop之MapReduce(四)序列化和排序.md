@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之MapReduce(四)序列化和排序'
+title: '08Hadoop之MapReduce(四)序列化和排序'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

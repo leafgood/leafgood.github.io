@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之MapReduce(三)Shuffle机制和Partition分区'
+title: '07Hadoop之MapReduce(三)Shuffle机制和Partition分区'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

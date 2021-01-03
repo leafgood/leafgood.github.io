@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之MapReduce(一)初识'
+title: '05Hadoop之MapReduce(一)初识'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

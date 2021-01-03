@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之HDFS(二)HDFS工作机制和集群安全模式'
+title: '03Hadoop之HDFS(二)HDFS工作机制和集群安全模式'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

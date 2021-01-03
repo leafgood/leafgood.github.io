@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之MapReduce(二)工作流和InputFormat介绍'
+title: '06Hadoop之MapReduce(二)工作流和InputFormat介绍'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

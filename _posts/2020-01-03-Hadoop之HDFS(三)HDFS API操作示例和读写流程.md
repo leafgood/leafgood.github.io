@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之HDFS(三)HDFS API操作示例和读写流程'
+title: '04Hadoop之HDFS(三)HDFS API操作示例和读写流程'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)

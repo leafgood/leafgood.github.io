@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hadoop之HDFS(一)概述与常用Shell操作'
+title: '02Hadoop之HDFS(一)概述与常用Shell操作'
 date: 2020-01-03
 author: leafgood
 color: rgb(255,210,32)
