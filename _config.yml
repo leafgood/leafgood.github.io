@@ -17,8 +17,12 @@ author: true
 name: '赵韦'
 NickName: 'leafgood'
 webtitle: 'http://leafgood.github.io'
-bio: '成功是给有准备的人'
-about: true
+school: '北京大学 信息管理与信息系统'
+skill: '编程语言:Java\Python 领域:云计算与大数据'
+email: 'zhaow610@qq.com'
+# position: '北京龙腾佳讯科技股份公司 云运维经理'
+# bio: `` # 我的链接
+about: false
 aboutyou: ''
 portraits: '/assets/profile.png' # your portraits image file path
 
