@@ -4,9 +4,9 @@ html,body,ul,li,div,header,nav,main,footer{
 }
 html{
     background-image: url(/assets/bak.svg);
-    /*background-size: 100%;*/
+    background-size: 100%;
     background-position: center;
-    background-color: silver;
+    /*background-color: silver;*/
     font-family: Ubuntu;
 }
 /*html::-webkit-scrollbar{
