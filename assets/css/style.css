@@ -4,6 +4,7 @@ html,body,ul,li,div,header,nav,main,footer{
 }
 html{
     background-image: url(/assets/bak.svg);
+    background-repeat: no-repeat;
     background-size: 100%;
     background-position: center;
     /*background-color: silver;*/
