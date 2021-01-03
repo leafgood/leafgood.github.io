@@ -1,0 +1,271 @@
+---
+layout: post
+title: '01 Zookeeper概述与部署'
+date: 2020-01-04
+author: leafgood
+color: rgb(255,210,32)
+tags: Zookeeper
+---
+# 一.Zookeepr概述
+## 1.1 Zookeeper介绍
+介绍Zookeeper之前，先说这样一个场景。
+假定有三台服务器A、B、C组成的分布式系统，在A机器上有一个资源RS，A、B、C三个服务器上的进程都要竞争这个资源，而因为业务需要，同一个时刻，只能有一个进程访问该资源，那么如何去做？
+那就加锁lock，当A的进程访问到RS资源时，加上一把锁lock，使得其他进程不能再访问该资源，而A用完RS资源，释放掉这把锁lock，其他进程又能访问资源RS，但只要访问到，就同样加锁，用完释放锁。
+在这个分布式系统中的锁，称之为分布式锁，也是分布式协调服务的核心。
+
+Zookeeper就是一个分布式，开源的为分布式提供协调服务的一个Apache的项目。它是基于观察者设计模式的分布式服务管理框架，它负责存储管理相关数据，接受观察者的注册，当这些数据状态发生改变，Zookeeper就负责通知注册过的观察者做出反应。
+
+Zookeeper提供这些服务主要通过其文件系统和监听机制。
+
+
+
+## 1.2 Zookeeper应用场景
+统一集群管理、配置管理、队列管理、分布式服务的同步、负载均衡等等。
+
+
+# 二.Zookeeper 数据结构
+Zookeeper的数据结构和Unix的文件系统很相似，如下图
+![](../assets/article/zookeeper01.png) 
+
+整体可以看成一个树，树中每一个节点都是叫做Znode。
+## 3.1 Znode类型
+- 持久节点：客户端和服务器断开连接后，创建的节点不会删除，依然存在
+- 临时节点：顾名思义，临时节点在客户端与服务器端会话断开后，节点就会删除
+
+创建znode时设置顺序标识，znode名称后会附加一个值，顺序号是一个单调递增的计数器，由父节点维护
+
+
+## 2.1 Znode组成
+Znode包含三部分内容：
+- 1.stat：状态信息, 描述该Znode的版本, 权限等，具体如下表
+
+|属性       |描述|
+|----|---------|
+|czxid|创建节点的事务zxid，每次修改ZooKeeper状态都会收到一个zxid形式的时间戳，也就是ZooKeeper事务ID。事务ID是ZooKeeper中所有修改总的次序。每个修改都有唯一的zxid，如果zxid1小于zxid2，那么zxid1在zxid2之前发生。
+|ctime| znode被创建的毫秒数(从1970年开始)|
+|mzxid| znode最后更新的事务zxid|
+|mtime | znode最后修改的毫秒数(从1970年开始)|
+|pZxid|znode最后更新的子节点zxid|
+|cversion | znode子节点变化号，znode子节点修改次数|
+|dataversion |znode数据变化号|
+|aclVersion | znode访问控制列表的变化号
+|ephemeralOwner|如果是临时节点，这个是znode拥有者的session id。如果不是临时节点则是0。|
+|dataLength| znode的数据长度|
+|numChildren | znode子节点数量 |
+
+- 2.data：与该Znode关联的数据，但最多为1M，通常使用远远小于这个值。且数据操作为原子性，一次数据操作要么成功，要么失败。
+- 3.children：子节点
+
+ 
+# 三.Zookeeper 安装部署
+## 3.1.分布式安装
+- 1）前期规划
+我这里有三台hadoop集群
+
+| 主机名|  IP 地址 |
+|---|---|
+|hadoop10|192.168.122.10|
+|hadoop11|192.168.122.11|
+|hadoop12|192.168.122.12|
+
+在hadoop10、hadoop11、hadoop12上部署Zookeeper
+上传压缩包zookeeper-3.5.7.tar.gz至三个节点下
+
+- 2）解压文件
+```
+sudo tar -zxvf zookeeper-3.5.7.tar.gz -C /opt/
+// 因为我所有操作都是用v2admin去做，所以改下所属用户和组
+sudo chown v2admin:v2admin -R /opt/zookeeper-3.5.7
+```
+- 3)创建服务器编号文件并配置服务器编号
+```
+cd /opt/zookeeper-3.5.7
+mkdir zkId
+cd zkId
+echo 10 > server_id
+// 另外两节点设置为 11 12
+```
+- 4)配置zoo.cfg
+```
+cd /opt/zookeeper-3.5.7/conf
+cp zoo_sample.cfg zoo.cfg
+vim zoo.cfg
+===============
+# 修改数据存储路径，就是服务器编号的路径
+dataDir=/opt/zookeeper.3.5.7/zkId
+# 增加如下内容
+server.10=hadoop10:2888:3888
+server.11=hadoop11:2888:3888
+server.12=hadoop12:2888:3888
+============
+```
+-5)启动脚本
+当然可以挨个启动服务bin/zKserver.sh start，但要是更多的服务器，那就太麻烦了。
+vim zk_server.sh
+```
+#!/bin/bash
+if [ $# -lt 1 ]
+then
+	echo Not enough Args
+fi
+
+for i in hadoop10 hadoop11 hadoop12
+do
+case $1 in
+"start")
+	echo "====================start $i zookeeper============"
+	ssh v2admin@$i /opt/module/zookeepr-3.5.7/bin/zkServer.sh start
+;;
+
+"status")
+	echo "====================status $i =================="
+	ssh v2admin@$i /opt/module/zookeepr-3.5.7/bin/zkServer.sh status
+
+;;
+
+"stop")
+	echo "=================stop $i =================="
+	ssh v2admin@$i /opt/module/zookeepr-3.5.7/bin/zkServer.sh stop
+
+;;
+*)
+	echo "Args Error"
+
+esac
+done
+``` 
+赋予脚本执行权限
+```
+chmod a+x zk_server.sh
+```
+启动
+```
+[v2admin@hadoop10 conf]$ zk_start.sh start
+====================start hadoop10 zookeeper============
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeepr-3.5.7/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+====================start hadoop11 zookeeper============
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeepr-3.5.7/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+====================start hadoop12 zookeeper============
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeepr-3.5.7/bin/../conf/zoo.cfg
+Starting zookeeper ... already running as process 1663.
+
+```
+至此部署完成
+## 3.2.客户端命令行操作
+- 1）启动客户端
+```
+[v2admin@hadoop10 ~]$  zkCli.sh
+// 我这里配置了环境变量，所以可以直接执行，如果没有配置，可以到zookeeper安装目录下的bin目录去执行
+```
+- 2 )显示所有操作命令 help
+```
+[zk: localhost:2181(CONNECTED) 0] help
+```
+- 3）查看当前znode中内容
+```
+[zk: localhost:2181(CONNECTED) 2] ls /
+[admin, brokers, cluster, config, consumers, controller_epoch, isr_change_notification, latest_producer_id_block, log_dir_event_notification, zookeeper]
+```
+- 4）查看当前节点详细内容
+```
+// 以前版本用 ls2，现在被ls -s 替代了
+[zk: localhost:2181(CONNECTED) 6] ls -s /
+[admin, brokers, cluster, config, consumers, controller_epoch, isr_change_notification, latest_producer_id_block, log_dir_event_notification, zookeeper]cZxid = 0x0
+ctime = Thu Jan 01 08:00:00 CST 1970
+mZxid = 0x0
+mtime = Thu Jan 01 08:00:00 CST 1970
+pZxid = 0x300000002
+cversion = 10
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 0
+numChildren = 10
+
+```
+- 5）创建节点
+```
+[zk: localhost:2181(CONNECTED) 7] create /beijing "bj"
+Created /beijing
+[zk: localhost:2181(CONNECTED) 8] create /beijing/chaoyang "bj_cy"
+Created /beijing/chaoyang
+```
+- 6)获取节点
+```
+// 获取值
+[zk: localhost:2181(CONNECTED) 9] get /beijing
+bj
+// 获取详细
+[zk: localhost:2181(CONNECTED) 16] get -s /beijing
+bj
+cZxid = 0x300000007
+ctime = Sun Dec 27 12:43:57 CST 2020
+mZxid = 0x300000007
+mtime = Sun Dec 27 12:43:57 CST 2020
+pZxid = 0x300000008
+cversion = 1
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 2
+numChildren = 1
+
+
+```
+- 7）创建临时节点
+```
+[zk: localhost:2181(CONNECTED) 17] create -e /beijing/haidian 'bj_hd'
+Created /beijing/haidian
+[zk: localhost:2181(CONNECTED) 18] get -s /beijing/haidian
+bj_hd
+cZxid = 0x300000009
+ctime = Sun Dec 27 12:51:17 CST 2020
+mZxid = 0x300000009
+mtime = Sun Dec 27 12:51:17 CST 2020
+pZxid = 0x300000009
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0xa00002895e50001
+dataLength = 5
+numChildren = 0
+
+```
+- 8)创建序号节点
+```
+[zk: localhost:2181(CONNECTED) 19] create  /China
+Created /China
+[zk: localhost:2181(CONNECTED) 20] create -s /China/Beijing
+Created /China/Beijing0000000000
+[zk: localhost:2181(CONNECTED) 21] create -s /China/Shanghai
+Created /China/Shanghai0000000001
+[zk: localhost:2181(CONNECTED) 22] create -s /China/Hebei
+Created /China/Hebei0000000002
+
+// 如果之前没有序号节点，则序号从开始，依次递增。
+[zk: localhost:2181(CONNECTED) 25] ls /China
+[Beijing0000000000, Hebei0000000002, Shanghai0000000001]
+// 如果之前原节点下有2个节点，则从2开始递增
+[zk: localhost:2181(CONNECTED) 26] ls /beijing
+[chaoyang, haidian]
+[zk: localhost:2181(CONNECTED) 27] create -s /beijing/xicheng 'xc'
+Created /beijing/xicheng0000000002
+[zk: localhost:2181(CONNECTED) 28] ls /beijing
+[chaoyang, haidian, xicheng0000000002]
+
+```
+- 9)修改节点数据值
+```
+[zk: localhost:2181(CONNECTED) 33] get /beijing/haidian
+bj_hd
+[zk: localhost:2181(CONNECTED) 34] set /beijing/haidian 'hd'
+[zk: localhost:2181(CONNECTED) 35] get /beijing/haidian
+hd
+
+```
+更多操作参见文档[https://zookeeper.apache.org/doc/r3.6.2/zookeeperCLI.html](https://zookeeper.apache.org/doc/r3.6.2/zookeeperCLI.html) 
