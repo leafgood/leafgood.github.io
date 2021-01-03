@@ -43,7 +43,7 @@ a{
   color: #444;
   /*display: block;*/
   /*font-family: 'Kaushan Script', cursive;*/
-  font-family: Pacifico;
+  font-family: SimHei;
 }
 .top-nav{
     height: 100%;
@@ -60,7 +60,7 @@ a{
     line-height: 75px;
 }
 .top-nav li a{
-  color: #444;
+  color: black;
   /*display: block;*/
 }
 .top-nav li a:hover{
@@ -134,7 +134,7 @@ a{
     /*font-weight: 600;*/
     color: #555;
     /*font-family: 'Kaushan Script', cursive;*/
-    font-family: Pacifico;
+    font-family: SimHei;
 }
 .top span:nth-child(2){
     display: block;
