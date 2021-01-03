@@ -21,7 +21,7 @@ a{
     height: 75px;
     background-color: #169fe6;
     background-position: center;
-    border-bottom: 0px solid #e7eaf1;
+    border-bottom: 1px solid #e7eaf1;
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
     z-index: 1;
@@ -134,7 +134,7 @@ a{
     /*font-weight: 600;*/
     color: #555;
     /*font-family: 'Kaushan Script', cursive;*/
-    font-family: SimHei;
+    font-family: STKaiti;
 }
 .top span:nth-child(2){
     display: block;
