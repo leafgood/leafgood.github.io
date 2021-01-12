@@ -1,9 +1,9 @@
 ---
 layout: default
-title: leafgood的IT集训营
-page-title: 每日一点
-home-title: 好记性不如烂笔头
-description: 日积月累，就成巨大的财富
+title: 标签
+page-title: 我的标签 
+home-title: 
+description:
 ---
 
 {% include header.html %}
@@ -18,11 +18,15 @@ description: 日积月累，就成巨大的财富
             {% endfor %}
         {% endif %}
         </li>
-    </ul>
+        {% for tag in site.tags %}
+        <li>
+            <span class="tag-name" id="{{ tag[0] }}">「{{ tag[0] }}」</span>
+            {% for post in tag[1] %}
+            <a class="tag-post" href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+            {% endfor %}
+        </li>
 
-    <ul class="post-list">
-      {% include posts_paginator.html %}
+        {% endfor%}
     </ul>
 </main>
-{% include pageNav.html %}
 {% include footer.html %}
